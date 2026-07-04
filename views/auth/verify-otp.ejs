@@ -1,0 +1,30 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-md mx-auto mt-4">
+  <div class="bg-white rounded-3xl shadow-soft border border-slate-100 p-8 sm:p-10">
+    <div class="mb-8 text-center">
+      <span class="inline-grid place-items-center h-12 w-12 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white text-xl font-extrabold shadow-soft mx-auto">✉</span>
+      <h1 class="mt-4 text-2xl font-extrabold text-slate-900">Verify your email</h1>
+      <p class="text-sm text-slate-500 mt-1">Enter the 6-digit code sent to <span class="font-semibold text-slate-700"><%= email %></span>.</p>
+    </div>
+
+    <form action="/verify-otp" method="POST" class="space-y-5">
+      <input type="hidden" name="email" value="<%= email %>" />
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Verification code</label>
+        <input name="otp" required inputmode="numeric" maxlength="6" placeholder="123456"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-lg tracking-[0.5em] focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+      </div>
+      <button class="w-full rounded-xl bg-brand-600 text-white py-3 font-semibold hover:bg-brand-700 active:scale-[.99] transition shadow-soft">
+        Verify &amp; continue
+      </button>
+    </form>
+
+    <form action="/resend-otp" method="POST" class="mt-4 text-center">
+      <input type="hidden" name="email" value="<%= email %>" />
+      <button class="text-sm text-brand-600 font-semibold hover:underline">Resend code</button>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

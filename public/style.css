@@ -1,0 +1,4 @@
+/* Custom overrides — Tailwind (CDN) handles the bulk of styling. */
+html { scroll-behavior: smooth; }
+button { cursor: pointer; }
+table td, table th { vertical-align: middle; }

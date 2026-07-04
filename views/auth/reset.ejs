@@ -1,0 +1,34 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-md mx-auto mt-4">
+  <div class="bg-white rounded-3xl shadow-soft border border-slate-100 p-8 sm:p-10">
+    <div class="mb-8">
+      <h1 class="text-2xl font-extrabold text-slate-900">Reset password</h1>
+      <p class="text-sm text-slate-500 mt-1">Enter the code we sent you and choose a new password.</p>
+    </div>
+
+    <form action="/reset" method="POST" class="space-y-5">
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email address</label>
+        <input type="email" name="email" required value="<%= email %>"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1.5">6-digit code</label>
+        <input name="otp" required inputmode="numeric" maxlength="6" placeholder="123456"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm tracking-[0.4em] focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1.5">New password</label>
+        <input type="password" id="pw" name="password" required placeholder="••••••••"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+        <%- include('../partials/password_strength', { pwId: 'pw' }) %>
+      </div>
+      <button class="w-full rounded-xl bg-brand-600 text-white py-3 font-semibold hover:bg-brand-700 active:scale-[.99] transition shadow-soft">
+        Update password
+      </button>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

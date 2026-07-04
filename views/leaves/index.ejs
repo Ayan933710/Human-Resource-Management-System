@@ -1,0 +1,72 @@
+<%- include('../partials/header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-slate-900">Leave Approvals</h1>
+    <p class="text-sm text-slate-500 mt-1">Review and action requests from <%= currentUser.company %>.</p>
+  </div>
+  <span class="rounded-full bg-amber-50 text-amber-700 px-3 py-1 text-sm font-semibold">
+    <%= leaves.filter(l => l.status === 'pending').length %> pending
+  </span>
+</div>
+
+<div class="bg-white rounded-2xl border border-slate-100 shadow-soft overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-50/80 text-left text-xs uppercase tracking-wide text-slate-400">
+        <tr>
+          <th class="px-5 py-3 font-semibold">Employee</th><th class="font-semibold">From</th>
+          <th class="font-semibold">To</th><th class="font-semibold">Type</th><th class="font-semibold">Reason</th>
+          <th class="font-semibold">Status</th><th class="font-semibold">Action</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-50">
+        <% if (!leaves.length) { %>
+          <tr><td colspan="7" class="px-5 py-8 text-center text-slate-400">No leave requests yet.</td></tr>
+        <% } %>
+        <% leaves.forEach(l => { %>
+          <tr class="hover:bg-slate-50/60 transition">
+            <td class="px-5 py-3">
+              <div class="flex items-center gap-3">
+                <span class="grid place-items-center h-8 w-8 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase"><%= l.name.trim().charAt(0) %></span>
+                <div>
+                  <div class="font-semibold text-slate-800"><%= l.name %></div>
+                  <div class="text-xs text-slate-400"><%= l.email %></div>
+                </div>
+              </div>
+            </td>
+            <td class="text-slate-600 font-medium"><%= l.start_date.toISOString ? l.start_date.toISOString().slice(0,10) : l.start_date %></td>
+            <td class="text-slate-600 font-medium"><%= l.end_date.toISOString ? l.end_date.toISOString().slice(0,10) : l.end_date %></td>
+            <td><span class="px-2 py-0.5 rounded-full text-xs font-semibold <%= l.leave_type === 'sick' ? 'bg-rose-50 text-rose-700' : 'bg-sky-50 text-sky-700' %>"><%= l.leave_type === 'sick' ? 'Sick' : 'Paid' %></span></td>
+            <td class="text-slate-500 max-w-[14rem] truncate"><%= l.reason || '—' %></td>
+            <td>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold
+                <%= l.status === 'approved' ? 'bg-emerald-50 text-emerald-700' : l.status === 'rejected' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700' %>">
+                <span class="h-1.5 w-1.5 rounded-full <%= l.status === 'approved' ? 'bg-emerald-500' : l.status === 'rejected' ? 'bg-red-500' : 'bg-amber-500' %>"></span>
+                <%= l.status %>
+              </span>
+            </td>
+            <td class="pr-5">
+              <% if (l.status === 'pending') { %>
+                <div class="flex gap-2">
+                  <form action="/leaves/<%= l.id %>?_method=PATCH" method="POST">
+                    <input type="hidden" name="status" value="approved" />
+                    <button class="rounded-lg bg-emerald-600 text-white px-3 py-1.5 text-xs font-semibold hover:bg-emerald-700 transition">Approve</button>
+                  </form>
+                  <form action="/leaves/<%= l.id %>?_method=PATCH" method="POST">
+                    <input type="hidden" name="status" value="rejected" />
+                    <button class="rounded-lg bg-white text-red-600 ring-1 ring-red-200 px-3 py-1.5 text-xs font-semibold hover:bg-red-50 transition">Reject</button>
+                  </form>
+                </div>
+              <% } else { %>
+                <span class="text-slate-300 text-xs font-medium">— done —</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

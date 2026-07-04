@@ -1,0 +1,52 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-lg mx-auto mt-4">
+  <div class="bg-white rounded-3xl shadow-soft border border-slate-100 p-8 sm:p-10">
+    <div class="mb-8">
+      <h1 class="text-2xl font-extrabold text-slate-900">Add Employee</h1>
+      <p class="text-sm text-slate-500 mt-1">
+        A unique Login ID and a temporary password will be generated and emailed to the employee.
+      </p>
+    </div>
+
+    <form action="/employees" method="POST" class="space-y-5">
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Full name</label>
+        <input name="name" required placeholder="Jane Doe"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email address</label>
+        <input type="email" name="email" required placeholder="jane@company.com"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+      </div>
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">Role</label>
+          <select name="role"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition">
+            <option value="employee">Employee</option>
+            <option value="admin">Admin / HR</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">Monthly base salary</label>
+          <input type="number" name="base_salary" min="0" step="1" value="0"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+        </div>
+      </div>
+
+      <div class="rounded-xl bg-brand-50/60 border border-brand-100 px-4 py-3 text-xs text-brand-800">
+        Login ID format: <span class="font-semibold">CC-FFLL-<%= year %>-NNNN</span>
+        (company + name initials + joining year + serial). Sent to the employee by email.
+      </div>
+
+      <div class="flex gap-3 pt-1">
+        <button class="rounded-xl bg-brand-600 text-white px-5 py-3 font-semibold hover:bg-brand-700 active:scale-[.99] transition shadow-soft">Create &amp; email credentials</button>
+        <a href="/employees" class="rounded-xl px-5 py-3 font-semibold text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50 transition">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

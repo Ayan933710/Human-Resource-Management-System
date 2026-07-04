@@ -1,0 +1,56 @@
+<%- include('partials/header') %>
+
+<div class="max-w-lg mx-auto mt-4">
+  <div class="bg-white rounded-3xl shadow-soft border border-slate-100 p-8 sm:p-10">
+    <div class="mb-8 text-center">
+      <span class="inline-grid place-items-center h-12 w-12 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white text-xl font-extrabold shadow-soft mx-auto">H</span>
+      <h1 class="mt-4 text-2xl font-extrabold text-slate-900">Create your account</h1>
+      <p class="text-sm text-slate-500 mt-1">Join your company's workspace in seconds.</p>
+    </div>
+
+    <form action="/signup" method="POST" class="space-y-5">
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">Full name</label>
+          <input name="name" required placeholder="Jane Doe"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">Company name</label>
+          <input name="company" required placeholder="Acme Corp"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email address</label>
+        <input type="email" name="email" required placeholder="you@company.com"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
+        <input type="password" id="pw" name="password" required placeholder="••••••••"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+      </div>
+
+      <%- include('partials/password_strength', { pwId: 'pw' }) %>
+
+      <div class="rounded-xl bg-brand-50/60 border border-brand-100 px-4 py-3 text-xs text-brand-800 flex items-center gap-2">
+        <svg class="h-4 w-4 flex-none" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 12.75v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+        Signing up creates an <span class="font-semibold">Admin / HR</span> account for your company. Employees are added by an admin from the dashboard.
+      </div>
+
+      <button class="w-full rounded-xl bg-brand-600 text-white py-3 font-semibold hover:bg-brand-700 active:scale-[.99] transition shadow-soft">
+        Create account
+      </button>
+    </form>
+
+    <p class="text-sm text-center mt-6 text-slate-500">
+      Already registered?
+      <a href="/login" class="text-brand-600 font-semibold hover:underline">Sign in</a>
+    </p>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

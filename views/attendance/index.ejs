@@ -1,0 +1,138 @@
+<%- include('../partials/header') %>
+
+<%
+  function badge(status) {
+    if (status === 'present')  return 'bg-emerald-50 text-emerald-700';
+    if (status === 'leave')    return 'bg-amber-50 text-amber-700';
+    if (status === 'upcoming') return 'bg-slate-50 text-slate-400';
+    return 'bg-red-50 text-red-700'; // absent
+  }
+  function label(status) {
+    if (status === 'present')  return 'Present';
+    if (status === 'leave')    return 'On Leave';
+    if (status === 'upcoming') return '—';
+    return 'Absent';
+  }
+  function dayShort(d) { return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short' }); }
+%>
+
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-slate-900">Attendance</h1>
+    <p class="text-sm text-slate-500 mt-1">Team status across <%= currentUser.company %>.</p>
+  </div>
+
+  <!-- Daily / Weekly toggle -->
+  <div class="inline-flex rounded-xl bg-slate-100 p-1 text-sm font-semibold">
+    <a href="/attendance?view=daily&date=<%= refDate %>"  class="px-4 py-1.5 rounded-lg transition <%= view === 'daily' ? 'bg-white text-brand-700 shadow' : 'text-slate-500 hover:text-slate-700' %>">Daily</a>
+    <a href="/attendance?view=weekly&date=<%= refDate %>" class="px-4 py-1.5 rounded-lg transition <%= view === 'weekly' ? 'bg-white text-brand-700 shadow' : 'text-slate-500 hover:text-slate-700' %>">Weekly</a>
+  </div>
+</div>
+
+<!-- Date navigation -->
+<div class="flex items-center gap-3 mb-6">
+  <a href="/attendance?view=<%= view %>&date=<%= prevDate %>" class="grid place-items-center h-9 w-9 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-brand-700 hover:border-brand-200 transition">←</a>
+  <form action="/attendance" method="GET" class="flex items-center gap-2">
+    <input type="hidden" name="view" value="<%= view %>" />
+    <input type="date" name="date" value="<%= refDate %>" onchange="this.form.submit()"
+      class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none" />
+  </form>
+  <a href="/attendance?view=<%= view %>&date=<%= nextDate %>" class="grid place-items-center h-9 w-9 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-brand-700 hover:border-brand-200 transition">→</a>
+  <span class="text-sm text-slate-500 ml-1"><%= view === 'weekly' ? '7-day view ending ' + refDate : refDate %></span>
+</div>
+
+<% if (view === 'daily') { %>
+  <!-- DAILY: list with approve/reject on pending check-ins -->
+  <div class="bg-white rounded-2xl border border-slate-100 shadow-soft overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50/80 text-left text-xs uppercase tracking-wide text-slate-400">
+          <tr>
+            <th class="px-5 py-3 font-semibold">Employee</th><th class="font-semibold">Status</th>
+            <th class="font-semibold">Check In</th><th class="font-semibold">Check Out</th>
+            <th class="font-semibold">Approval</th><th class="font-semibold pr-5">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-50">
+          <% rows.forEach(r => { var c = r.cells[refDate]; %>
+            <tr class="hover:bg-slate-50/60 transition">
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-3">
+                  <span class="grid place-items-center h-8 w-8 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase"><%= r.user.name.trim().charAt(0) %></span>
+                  <div><div class="font-semibold text-slate-800"><%= r.user.name %></div><div class="text-xs text-slate-400"><%= r.user.email %></div></div>
+                </div>
+              </td>
+              <td><span class="px-2.5 py-1 rounded-full text-xs font-semibold <%= badge(c.status) %>"><%= label(c.status) %></span></td>
+              <td class="text-slate-600"><%= c.checkIn ? new Date(c.checkIn).toLocaleTimeString() : '—' %></td>
+              <td class="text-slate-600"><%= c.checkOut ? new Date(c.checkOut).toLocaleTimeString() : '—' %></td>
+              <td>
+                <% if (c.attStatus) { %>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-semibold capitalize <%= c.attStatus === 'approved' ? 'bg-emerald-50 text-emerald-700' : c.attStatus === 'rejected' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700' %>"><%= c.attStatus %></span>
+                <% } else { %><span class="text-slate-300">—</span><% } %>
+              </td>
+              <td class="pr-5">
+                <% if (c.attendanceId && c.attStatus === 'pending') { %>
+                  <div class="flex gap-2">
+                    <form action="/attendance/<%= c.attendanceId %>/status?_method=PATCH" method="POST">
+                      <input type="hidden" name="status" value="approved" />
+                      <button class="rounded-lg bg-emerald-600 text-white px-3 py-1.5 text-xs font-semibold hover:bg-emerald-700 transition">Approve</button>
+                    </form>
+                    <form action="/attendance/<%= c.attendanceId %>/status?_method=PATCH" method="POST">
+                      <input type="hidden" name="status" value="rejected" />
+                      <button class="rounded-lg bg-white text-red-600 ring-1 ring-red-200 px-3 py-1.5 text-xs font-semibold hover:bg-red-50 transition">Reject</button>
+                    </form>
+                  </div>
+                <% } else { %><span class="text-slate-300 text-xs">—</span><% } %>
+              </td>
+            </tr>
+          <% }) %>
+          <% if (!rows.length) { %><tr><td colspan="6" class="px-5 py-8 text-center text-slate-400">No employees.</td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<% } else { %>
+  <!-- WEEKLY: grid matrix -->
+  <div class="bg-white rounded-2xl border border-slate-100 shadow-soft overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50/80 text-left text-xs uppercase tracking-wide text-slate-400">
+          <tr>
+            <th class="px-5 py-3 font-semibold">Employee</th>
+            <% days.forEach(d => { %>
+              <th class="font-semibold text-center px-2"><div><%= dayShort(d) %></div><div class="text-[10px] normal-case text-slate-300"><%= d.slice(5) %></div></th>
+            <% }) %>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-50">
+          <% rows.forEach(r => { %>
+            <tr class="hover:bg-slate-50/60 transition">
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-3">
+                  <span class="grid place-items-center h-8 w-8 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase"><%= r.user.name.trim().charAt(0) %></span>
+                  <span class="font-semibold text-slate-800"><%= r.user.name %></span>
+                </div>
+              </td>
+              <% days.forEach(d => { var c = r.cells[d]; %>
+                <td class="text-center px-2">
+                  <span class="inline-block px-2 py-1 rounded-md text-[11px] font-semibold <%= badge(c.status) %>"><%= label(c.status) %></span>
+                </td>
+              <% }) %>
+            </tr>
+          <% }) %>
+          <% if (!rows.length) { %><tr><td colspan="<%= days.length + 1 %>" class="px-5 py-8 text-center text-slate-400">No employees.</td></tr><% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% } %>
+
+<!-- Legend -->
+<div class="mt-5 flex flex-wrap items-center gap-4 text-xs text-slate-500">
+  <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span> Present</span>
+  <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-amber-500"></span> On Leave</span>
+  <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-red-500"></span> Absent</span>
+</div>
+
+<%- include('../partials/footer') %>

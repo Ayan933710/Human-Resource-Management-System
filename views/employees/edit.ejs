@@ -1,0 +1,101 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-2xl mx-auto mt-4">
+  <div class="bg-white rounded-3xl shadow-soft border border-slate-100 p-8 sm:p-10">
+    <div class="mb-8 flex items-center gap-4">
+      <span class="grid place-items-center h-12 w-12 rounded-2xl bg-brand-100 text-brand-700 text-lg font-bold uppercase"><%= employee.name.trim().charAt(0) %></span>
+      <div>
+        <h1 class="text-xl font-extrabold text-slate-900"><%= isAdminEditingOther ? 'Edit Employee' : 'Edit My Profile' %></h1>
+        <p class="text-sm text-slate-500"><%= employee.name %> · <%= employee.email %></p>
+      </div>
+    </div>
+
+    <form action="/employees/<%= employee.id %>?_method=PATCH" method="POST" class="space-y-5">
+
+      <% if (isAdminEditingOther) { %>
+        <!-- Admin-only editable identity fields (login code stays fixed) -->
+        <div class="rounded-xl bg-brand-50/60 border border-brand-100 px-4 py-3 text-xs text-brand-800">
+          Editing as admin — you can change everything except the Login ID
+          (<span class="font-semibold"><%= employee.login_code || '—' %></span>).
+        </div>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Full name</label>
+            <input name="name" value="<%= employee.name %>" required
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email</label>
+            <input type="email" name="email" value="<%= employee.email %>" required
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Role</label>
+            <select name="role"
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition">
+              <option value="employee" <%= employee.role === 'employee' ? 'selected' : '' %>>Employee</option>
+              <option value="admin" <%= employee.role === 'admin' ? 'selected' : '' %>>Admin / HR</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Monthly base salary</label>
+            <input type="number" name="base_salary" min="0" step="1" value="<%= Number(employee.base_salary) %>"
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+          </div>
+        </div>
+        <hr class="border-slate-100" />
+      <% } else { %>
+        <div class="rounded-xl bg-slate-50 border border-slate-200 px-4 py-3 text-xs text-slate-500">
+          Your Login ID, name and email can't be changed here. Contact your admin for those.
+        </div>
+      <% } %>
+
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">Phone</label>
+          <input name="phone" value="<%= employee.phone || '' %>" placeholder="+91 90000 00000"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">Resume link</label>
+          <input name="resume_url" value="<%= employee.resume_url || '' %>" placeholder="https://drive.google.com/…"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Address</label>
+        <textarea name="address" rows="2" placeholder="Street, city, country"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition"><%= employee.address || '' %></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1.5">About</label>
+        <textarea name="about" rows="4" placeholder="A short bio about yourself…"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition"><%= employee.about || '' %></textarea>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">Skills</label>
+          <input name="skills" value="<%= employee.skills || '' %>" placeholder="JavaScript, SQL, Communication"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">Certifications</label>
+          <input name="certifications" value="<%= employee.certifications || '' %>" placeholder="AWS SAA, PMP"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+        </div>
+      </div>
+
+      <div class="flex gap-3 pt-1">
+        <button class="rounded-xl bg-brand-600 text-white px-5 py-3 font-semibold hover:bg-brand-700 active:scale-[.99] transition shadow-soft">Save changes</button>
+        <a href="<%= isAdminEditingOther ? '/employees/' + employee.id : '/profile' %>" class="rounded-xl px-5 py-3 font-semibold text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50 transition">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

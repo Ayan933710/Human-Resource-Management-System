@@ -1,0 +1,51 @@
+<%- include('../partials/header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-extrabold text-slate-900">Employees</h1>
+    <p class="text-sm text-slate-500 mt-1">Everyone in <%= currentUser.company %>. Click a card for full details.</p>
+  </div>
+  <div class="flex items-center gap-3">
+    <span class="rounded-full bg-brand-50 text-brand-700 px-3 py-1 text-sm font-semibold"><%= employees.length %> people</span>
+    <a href="/employees/new" class="rounded-lg bg-brand-600 text-white px-4 py-2 text-sm font-semibold hover:bg-brand-700 transition shadow-soft">+ Add Employee</a>
+  </div>
+</div>
+
+<% if (!employees.length) { %>
+  <div class="bg-white rounded-2xl border border-slate-100 shadow-soft p-10 text-center text-slate-400">
+    No employees yet. Use <span class="font-semibold text-brand-600">Add Employee</span> to create one.
+  </div>
+<% } %>
+
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+  <% employees.forEach(e => { %>
+    <a href="/employees/<%= e.id %>" class="group bg-white rounded-2xl border border-slate-100 shadow-soft p-5 hover:shadow-lg hover:-translate-y-0.5 transition block">
+      <div class="flex items-center gap-4">
+        <span class="grid place-items-center h-14 w-14 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white text-lg font-extrabold uppercase shadow-soft">
+          <%= e.name.trim().charAt(0) %>
+        </span>
+        <div class="min-w-0">
+          <div class="font-bold text-slate-900 truncate group-hover:text-brand-700 transition"><%= e.name %></div>
+          <div class="text-xs text-slate-400 truncate"><%= e.email %></div>
+        </div>
+      </div>
+
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <span class="px-2.5 py-1 rounded-full text-xs font-semibold capitalize <%= e.role === 'admin' ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-100 text-slate-600' %>"><%= e.role %></span>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold <%= e.is_verified ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700' %>">
+          <span class="h-1.5 w-1.5 rounded-full <%= e.is_verified ? 'bg-emerald-500' : 'bg-red-500' %>"></span>
+          <%= e.is_verified ? 'Verified' : 'Pending' %>
+        </span>
+      </div>
+
+      <dl class="mt-4 pt-4 border-t border-slate-50 space-y-1.5 text-sm">
+        <div class="flex justify-between"><dt class="text-slate-400">Login ID</dt><dd class="font-medium text-slate-700"><%= e.login_code || '—' %></dd></div>
+        <div class="flex justify-between"><dt class="text-slate-400">Phone</dt><dd class="font-medium text-slate-700"><%= e.phone || '—' %></dd></div>
+      </dl>
+
+      <div class="mt-4 text-right text-sm font-semibold text-brand-600 opacity-0 group-hover:opacity-100 transition">View details →</div>
+    </a>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>

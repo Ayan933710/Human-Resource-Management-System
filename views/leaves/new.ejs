@@ -1,0 +1,75 @@
+<%- include('../partials/header') %>
+
+<div class="max-w-lg mx-auto mt-4">
+  <div class="bg-white rounded-3xl shadow-soft border border-slate-100 p-8 sm:p-10">
+    <div class="mb-8">
+      <h1 class="text-2xl font-extrabold text-slate-900">Apply for Leave</h1>
+      <p class="text-sm text-slate-500 mt-1">Submit a request for HR approval.</p>
+    </div>
+
+    <form action="/leaves" method="POST" class="space-y-5" id="leaveForm">
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Leave type</label>
+        <select name="leave_type"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition">
+          <option value="paid">Paid Time Off</option>
+          <option value="sick">Sick Time Off</option>
+        </select>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">Start date</label>
+          <input type="date" name="start_date" id="startDate" required min="<%= minDate %>"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">End date</label>
+          <input type="date" name="end_date" id="endDate" required min="<%= minDate %>"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition" />
+          <p id="dateError" class="hidden mt-1.5 text-xs font-medium text-red-600">End date must be on or after the start date.</p>
+        </div>
+      </div>
+      <p class="text-xs text-slate-400">Leave can be applied from <span class="font-semibold text-slate-500"><%= minDate %></span> (tomorrow) onwards.</p>
+      <div>
+        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Reason <span class="text-slate-400 font-normal">(optional)</span></label>
+        <textarea name="reason" rows="4" placeholder="Add a short note for your manager…"
+          class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100 outline-none transition"></textarea>
+      </div>
+      <div class="flex gap-3 pt-1">
+        <button class="rounded-xl bg-brand-600 text-white px-5 py-3 font-semibold hover:bg-brand-700 active:scale-[.99] transition shadow-soft">Submit request</button>
+        <a href="/profile" class="rounded-xl px-5 py-3 font-semibold text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50 transition">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Change 3: end date must be on/after the start date — enforced live during entry.
+  (function () {
+    const form  = document.getElementById('leaveForm');
+    const start = document.getElementById('startDate');
+    const end   = document.getElementById('endDate');
+    const err   = document.getElementById('dateError');
+
+    function sync() {
+      // The end date can never be earlier than the chosen start date.
+      end.min = start.value || start.min;
+      if (end.value && start.value && end.value < start.value) {
+        end.setCustomValidity('End date must be on or after the start date.');
+        err.classList.remove('hidden');
+      } else {
+        end.setCustomValidity('');
+        err.classList.add('hidden');
+      }
+    }
+
+    start.addEventListener('change', sync);
+    end.addEventListener('change', sync);
+    form.addEventListener('submit', function (e) {
+      sync();
+      if (!end.checkValidity()) { e.preventDefault(); end.reportValidity(); }
+    });
+  })();
+</script>
+
+<%- include('../partials/footer') %>
