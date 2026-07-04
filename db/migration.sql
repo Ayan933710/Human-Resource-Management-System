@@ -1,6 +1,4 @@
--- HRMS Feature Migration (additive — run once on an EXISTING hrms_db to keep your data)
--- Usage: mysql -u root -p hrms_db < migration.sql
--- Note: MySQL errors if a column already exists. If you re-run, remove lines already applied.
+
 USE hrms_db;
 
 -- ---- users -------------------------------------------------------------
